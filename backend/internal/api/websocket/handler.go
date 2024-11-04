@@ -189,18 +189,42 @@ func handleDigCommand(cmd CommandRequest, output chan<- string, errChan chan<- e
 		return
 	}
 
-	// Construct dig command with parameters
-	args := []string{domain, recordType}
+	// Start with base arguments
+	args := []string{}
 
-	// Add any additional parameters
+	// Add nameserver if provided
+	if nameserver, ok := cmd.Parameters["nameserver"].(string); ok && nameserver != "" {
+		args = append(args, fmt.Sprintf("@%s", nameserver))
+	}
+
+	// Add domain and record type
+	args = append(args, domain, recordType)
+
+	// Add parameters
 	if params, ok := cmd.Parameters["parameters"].(map[string]interface{}); ok {
-		for key, value := range params {
-			if value.(bool) {
-				args = append(args, fmt.Sprintf("+%s", key))
+		// Handle boolean parameters
+		paramMap := map[string]string{
+			"short":   "+short",
+			"trace":   "+trace",
+			"stats":   "+stats",
+			"tcp":     "+tcp",
+			"dnssec":  "+dnssec",
+			"recurse": "+recurse",
+		}
+
+		for key, flag := range paramMap {
+			if value, exists := params[key]; exists {
+				if enabled, ok := value.(bool); ok && enabled {
+					args = append(args, flag)
+				} else if key == "recurse" && !enabled {
+					// Special case for recurse, as it's enabled by default
+					args = append(args, "+norecurse")
+				}
 			}
 		}
 	}
 
+	// Execute command
 	digCmd := exec.Command(digPath, args...)
 
 	// Get command output
