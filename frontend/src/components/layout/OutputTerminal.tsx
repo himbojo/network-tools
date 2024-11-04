@@ -1,4 +1,3 @@
-// File: frontend/src/components/layout/OutputTerminal.tsx
 import { FC, useRef, useEffect } from 'react';
 import { ClipboardCopy, Trash2 } from 'lucide-react';
 
@@ -10,16 +9,15 @@ interface OutputTerminalProps {
   error?: string;
 }
 
-const OutputTerminal: FC<OutputTerminalProps> = ({ 
-  command, 
-  output, 
-  onClear, 
+const OutputTerminal: FC<OutputTerminalProps> = ({
+  command,
+  output,
+  onClear,
   onCopy,
-  error 
+  error
 }) => {
   const terminalRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when output changes
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
@@ -27,13 +25,13 @@ const OutputTerminal: FC<OutputTerminalProps> = ({
   }, [output]);
 
   return (
-    <div className="bg-gray-900 rounded-lg overflow-hidden">
+    <div className="rounded-lg overflow-hidden bg-[#1a1b26] border border-gray-800">
       {/* Terminal Header */}
-      <div className="flex justify-between items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+      <div className="flex justify-between items-center px-4 py-3 bg-[#1f2335] border-b border-gray-800">
         <div className="flex space-x-2">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <div className="w-3 h-3 rounded-full bg-green-500" />
+          <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+          <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+          <div className="w-3 h-3 rounded-full bg-[#28c840]" />
         </div>
         <div className="flex space-x-2">
           <button
@@ -64,12 +62,11 @@ const OutputTerminal: FC<OutputTerminalProps> = ({
           </div>
         )}
         {output.map((line, index) => (
-          <div 
+          <div
             key={index}
             className="whitespace-pre-wrap break-all"
-            // Allow HTML for ANSI color codes
-            dangerouslySetInnerHTML={{ 
-              __html: line.replace(/\n/g, '<br/>') 
+            dangerouslySetInnerHTML={{
+              __html: line.replace(/\n/g, '<br/>')
             }}
           />
         ))}
