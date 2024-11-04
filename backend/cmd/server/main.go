@@ -7,10 +7,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/websocket/v2"
+	wsfiber "github.com/gofiber/websocket/v2" // Added alias to avoid naming conflict
 
-	"network-tools/backend/internal/api/middleware"
-	"network-tools/backend/internal/api/websocket"
+	"backend/internal/api/middleware"
+	"backend/internal/api/websocket"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 
 	// WebSocket route
 	app.Use("/ws", middleware.UpgradeWebSocket)
-	app.Get("/ws", websocket.New(websocket.Handler))
+	app.Get("/ws", wsfiber.New(websocket.Handler)) // Using the alias here
 
 	// Start server
 	log.Fatal(app.Listen(":8080"))

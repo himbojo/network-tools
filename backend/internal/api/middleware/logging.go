@@ -2,12 +2,29 @@
 package middleware
 
 import (
+	"log"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 )
 
+// Logging middleware logs request information
 func Logging() fiber.Handler {
-	// TODO: Implement logging middleware
 	return func(c *fiber.Ctx) error {
-		return c.Next()
+		start := time.Now()
+
+		// Continue with the next middleware/handler
+		err := c.Next()
+
+		// Log after processing
+		log.Printf(
+			"%s %s - %v - %v",
+			c.Method(),
+			c.Path(),
+			c.Response().StatusCode(),
+			time.Since(start),
+		)
+
+		return err
 	}
 }

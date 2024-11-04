@@ -1,4 +1,3 @@
-```
 network-tools/
 ├── README.md
 ├── .gitignore
@@ -20,6 +19,8 @@ network-tools/
 │   │   │   ├── tools/
 │   │   │   │   ├── PingTool.tsx
 │   │   │   │   └── DigTool.tsx
+│   │   │   ├── ui/
+│   │   │   │   └── alert.tsx
 │   │   │   └── common/
 │   │   │       ├── CommandPreview.tsx
 │   │   │       └── ToolInput.tsx
@@ -38,28 +39,24 @@ network-tools/
 │   └── public/
 │
 └── backend/
+    ├── go.mod
+    ├── go.sum
     ├── cmd/
     │   └── server/
     │       └── main.go
     ├── internal/
     │   ├── api/
-    │   │   ├── handlers/
-    │   │   │   ├── ping.go
-    │   │   │   └── dig.go
     │   │   ├── middleware/
     │   │   │   ├── ratelimit.go
+    │   │   │   ├── websocket.go
     │   │   │   └── logging.go
     │   │   └── websocket/
     │   │       └── handler.go
     │   ├── tools/
     │   │   ├── ping.go
     │   │   └── dig.go
-    │   ├── validation/
-    │   │   └── input.go
     │   └── config/
     │       └── config.go
-    ├── pkg/
-    │   └── logger/
-    │       └── logger.go
-    └── go.mod
-```
+    └── pkg/
+        └── logger/
+            └── logger.go
