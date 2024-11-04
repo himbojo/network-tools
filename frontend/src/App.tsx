@@ -1,4 +1,3 @@
-// File: frontend/src/App.tsx
 import { useState } from 'react';
 import Sidebar from './components/layout/Sidebar';
 import ThemeToggle from './components/layout/ThemeToggle';
@@ -9,19 +8,22 @@ const App = () => {
   const [selectedTool, setSelectedTool] = useState<'ping' | 'dig'>('ping');
   
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <div className="flex">
+    // Remove conflicting styles, use Tailwind classes properly
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="flex h-screen">
         <Sidebar selectedTool={selectedTool} onToolSelect={setSelectedTool} />
-        <main className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">
-                {selectedTool === 'ping' ? 'Ping Tool' : 'Dig Tool'}
-              </h1>
-              <ThemeToggle />
+        <main className="flex-1 overflow-auto">
+          <div className="p-6">
+            <div className="max-w-4xl mx-auto space-y-6">
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {selectedTool === 'ping' ? 'Ping Tool' : 'Dig Tool'}
+                </h1>
+                <ThemeToggle />
+              </div>
+              
+              {selectedTool === 'ping' ? <PingTool /> : <DigTool />}
             </div>
-            
-            {selectedTool === 'ping' ? <PingTool /> : <DigTool />}
           </div>
         </main>
       </div>
