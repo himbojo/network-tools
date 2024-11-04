@@ -1,4 +1,5 @@
 import { Monitor, Wifi } from 'lucide-react';
+import { useWebSocket } from '../../hooks/useWebSocket';
 
 interface SidebarProps {
   selectedTool: 'ping' | 'dig';
@@ -6,6 +7,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ selectedTool, onToolSelect }: SidebarProps) => {
+  const { connected, error } = useWebSocket();
+  
   const tools = [
     {
       id: 'ping',
@@ -26,6 +29,26 @@ const Sidebar = ({ selectedTool, onToolSelect }: SidebarProps) => {
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <h1 className="text-xl font-bold">Network Tools</h1>
+      </div>
+
+      {/* Connection Status */}
+      <div className="px-4 py-3 border-b border-gray-700">
+        <div className="flex items-center space-x-2">
+          <div
+            className={`w-2 h-2 rounded-full ${
+              connected ? 'bg-green-500' : 'bg-red-500'
+            }`}
+          />
+          <span className="text-sm">
+            {connected ? (
+              <span className="text-green-400">Connected</span>
+            ) : (
+              <span className="text-red-400">
+                {error || 'Disconnected'}
+              </span>
+            )}
+          </span>
+        </div>
       </div>
 
       {/* Tools Navigation */}

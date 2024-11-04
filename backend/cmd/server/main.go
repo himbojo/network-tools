@@ -1,4 +1,3 @@
-// File: backend/cmd/server/main.go
 package main
 
 import (
@@ -6,27 +5,34 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	wsfiber "github.com/gofiber/websocket/v2" // Added alias to avoid naming conflict
+	"github.com/gofiber/websocket/v2"
 
-	"backend/internal/api/middleware"
-	"backend/internal/api/websocket"
+	wsHandler "backend/internal/api/websocket"
 )
 
 func main() {
 	app := fiber.New(fiber.Config{
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
+		ReadTimeout:  time.Minute,
+		WriteTimeout: time.Minute,
 	})
 
 	// Middleware
 	app.Use(logger.New())
-	app.Use(middleware.RateLimit())
+	app.Use(cors.New())
+
+	// WebSocket upgrade middleware
+	app.Use("/ws", func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+		return fiber.ErrUpgradeRequired
+	})
 
 	// WebSocket route
-	app.Use("/ws", middleware.UpgradeWebSocket)
-	app.Get("/ws", wsfiber.New(websocket.Handler)) // Using the alias here
+	app.Get("/ws", websocket.New(wsHandler.Handler))
 
-	// Start server
 	log.Fatal(app.Listen(":8080"))
 }

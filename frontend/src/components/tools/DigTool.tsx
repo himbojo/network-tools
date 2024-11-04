@@ -2,7 +2,6 @@ import { FC, useState, useCallback, useMemo } from 'react';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import OutputTerminal from '../layout/OutputTerminal';
-import { Alert, AlertDescription } from '../ui/alert';
 import { ArrowRight } from 'lucide-react';
 
 const RECORD_TYPES = ['A', 'AAAA', 'MX', 'NS', 'TXT', 'CNAME', 'SOA'] as const;
@@ -87,13 +86,6 @@ export const DigTool: FC = () => {
 
   return (
     <div className="space-y-6">
-      {!connected && (
-        <Alert variant="destructive" className="bg-red-900/30 border border-red-600">
-          <AlertDescription className="text-red-400">
-            Not connected to server. Please wait or refresh the page.
-          </AlertDescription>
-        </Alert>
-      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Domain Input */}
