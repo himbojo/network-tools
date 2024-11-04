@@ -21,6 +21,7 @@ network-tools/
 │   ├── pkg/
 │   │   ├── logger/
 │   │   │   └── logger.go
+└── directorystructure.md
 ├── frontend/
 │   └── eslint.config.js
 │   └── index.html
@@ -37,6 +38,7 @@ network-tools/
 │   │   │   └── react.svg
 │   │   ├── components/
 │   │   │   ├── common/
+│   │   │   │   └── ClearCacheButton.tsx
 │   │   │   │   └── ToolInput.tsx
 │   │   │   ├── layout/
 │   │   │   │   └── OutputTerminal.tsx
@@ -68,5 +70,4 @@ network-tools/
 │   └── tsconfig.json
 │   └── tsconfig.node.json
 │   └── vite.config.ts
-├──  masterplan.md
-└── directorystructure.md
+└── masterplan.md
