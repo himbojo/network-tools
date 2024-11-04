@@ -1,10 +1,11 @@
-import { FC, useState, useCallback } from 'react';
+import { FC, useState, useCallback, useRef } from 'react';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import OutputTerminal from '../layout/OutputTerminal';
 import { ArrowRight } from 'lucide-react';
+import ClearCacheButton from '../common/ClearCacheButton';
 
-const RECORD_TYPES = ['A', 'AAAA', 'MX', 'NS', 'TXT', 'CNAME', 'SOA'] as const;
+const RECORD_TYPES = ['A', 'AAAA', 'MX', 'NS', 'TXT', 'CNAME', 'SOA', 'PTR'] as const;
 type RecordType = typeof RECORD_TYPES[number];
 
 interface DigSettings {
@@ -13,11 +14,6 @@ interface DigSettings {
   nameserver: string;
   parameters: {
     short: boolean;
-    trace: boolean;
-    stats: boolean;
-    recurse: boolean;
-    tcp: boolean;
-    dnssec: boolean;
   };
 }
 
@@ -26,12 +22,7 @@ const DEFAULT_SETTINGS: DigSettings = {
   recordType: 'A',
   nameserver: '',
   parameters: {
-    short: false,
-    trace: false,
-    stats: true,
-    recurse: true,
-    tcp: false,
-    dnssec: false
+    short: false
   }
 };
 
@@ -41,19 +32,14 @@ const Switch: FC<{
   label: string;
   description?: string;
 }> = ({ checked, onChange, label, description }) => (
-  <label className="relative flex items-start">
+  <label className="relative flex items-start cursor-pointer">
     <div className="flex items-center h-6">
-      <input
-        type="checkbox"
-        className="hidden"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-      />
       <div
         className={`
           relative w-11 h-6 rounded-full transition-colors duration-200 ease-in-out
           ${checked ? 'bg-blue-600' : 'bg-gray-700'}
         `}
+        onClick={() => onChange(!checked)}
       >
         <div
           className={`
@@ -77,24 +63,25 @@ export const DigTool: FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { sendMessage, connected } = useWebSocket();
   const [settings, setSettings] = useLocalStorage<DigSettings>('dig-settings', DEFAULT_SETTINGS);
+  
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleClearCache = useCallback(() => {
+    setSettings(DEFAULT_SETTINGS);
+    setOutput([]);
+    setError(null);
+  }, [setSettings]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
-
+    
     const formData = new FormData(event.currentTarget);
     const newSettings: DigSettings = {
       domain: formData.get('domain') as string,
       recordType: formData.get('recordType') as RecordType,
       nameserver: formData.get('nameserver') as string,
-      parameters: {
-        short: settings.parameters.short,
-        trace: settings.parameters.trace,
-        stats: settings.parameters.stats,
-        recurse: settings.parameters.recurse,
-        tcp: settings.parameters.tcp,
-        dnssec: settings.parameters.dnssec
-      }
+      parameters: settings.parameters
     };
 
     setSettings(newSettings);
@@ -136,10 +123,13 @@ export const DigTool: FC = () => {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Main Inputs */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-gray-100">Dig Tool Settings</h2>
+        <ClearCacheButton onClear={handleClearCache} />
+      </div>
+
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Domain Input */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
               Domain
@@ -147,7 +137,8 @@ export const DigTool: FC = () => {
             <input
               name="domain"
               type="text"
-              defaultValue={settings.domain}
+              value={settings.domain}
+              onChange={(e) => setSettings(prev => ({ ...prev, domain: e.target.value }))}
               placeholder="example.com"
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg 
                        text-gray-100 placeholder-gray-500 focus:outline-none 
@@ -155,14 +146,14 @@ export const DigTool: FC = () => {
             />
           </div>
 
-          {/* Record Type Select */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
               Record Type
             </label>
             <select
               name="recordType"
-              defaultValue={settings.recordType}
+              value={settings.recordType}
+              onChange={(e) => setSettings(prev => ({ ...prev, recordType: e.target.value as RecordType }))}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg 
                        text-gray-100 focus:outline-none focus:ring-2 
                        focus:ring-blue-500 focus:border-transparent"
@@ -173,7 +164,6 @@ export const DigTool: FC = () => {
             </select>
           </div>
 
-          {/* Nameserver Input */}
           <div>
             <label className="block text-sm font-medium text-gray-200 mb-2">
               Nameserver (Optional)
@@ -181,7 +171,8 @@ export const DigTool: FC = () => {
             <input
               name="nameserver"
               type="text"
-              defaultValue={settings.nameserver}
+              value={settings.nameserver}
+              onChange={(e) => setSettings(prev => ({ ...prev, nameserver: e.target.value }))}
               placeholder="8.8.8.8 or dns.google"
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg 
                        text-gray-100 placeholder-gray-500 focus:outline-none 
@@ -190,45 +181,14 @@ export const DigTool: FC = () => {
           </div>
         </div>
 
-        {/* Options */}
         <div className="space-y-4">
           <label className="block text-sm font-medium text-gray-200 mb-4">Options</label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
             <Switch
               checked={settings.parameters.short}
               onChange={handleParameterChange('short')}
               label="Short Output"
               description="Remove comments and additional information"
-            />
-            <Switch
-              checked={settings.parameters.trace}
-              onChange={handleParameterChange('trace')}
-              label="Trace Query"
-              description="Trace the query path through DNS servers"
-            />
-            <Switch
-              checked={settings.parameters.stats}
-              onChange={handleParameterChange('stats')}
-              label="Show Statistics"
-              description="Display query statistics and timing information"
-            />
-            <Switch
-              checked={settings.parameters.recurse}
-              onChange={handleParameterChange('recurse')}
-              label="Recursive Query"
-              description="Enable recursive resolution"
-            />
-            <Switch
-              checked={settings.parameters.tcp}
-              onChange={handleParameterChange('tcp')}
-              label="Use TCP"
-              description="Use TCP instead of UDP for queries"
-            />
-            <Switch
-              checked={settings.parameters.dnssec}
-              onChange={handleParameterChange('dnssec')}
-              label="DNSSEC"
-              description="Enable DNSSEC validation"
             />
           </div>
         </div>

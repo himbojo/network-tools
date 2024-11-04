@@ -200,27 +200,10 @@ func handleDigCommand(cmd CommandRequest, output chan<- string, errChan chan<- e
 	// Add domain and record type
 	args = append(args, domain, recordType)
 
-	// Add parameters
+	// Add short parameter if enabled
 	if params, ok := cmd.Parameters["parameters"].(map[string]interface{}); ok {
-		// Handle boolean parameters
-		paramMap := map[string]string{
-			"short":   "+short",
-			"trace":   "+trace",
-			"stats":   "+stats",
-			"tcp":     "+tcp",
-			"dnssec":  "+dnssec",
-			"recurse": "+recurse",
-		}
-
-		for key, flag := range paramMap {
-			if value, exists := params[key]; exists {
-				if enabled, ok := value.(bool); ok && enabled {
-					args = append(args, flag)
-				} else if key == "recurse" && !enabled {
-					// Special case for recurse, as it's enabled by default
-					args = append(args, "+norecurse")
-				}
-			}
+		if short, exists := params["short"].(bool); exists && short {
+			args = append(args, "+short")
 		}
 	}
 

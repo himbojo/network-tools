@@ -1,62 +1,72 @@
 network-tools/
-├── README.md
-├── .gitignore
-├── docker-compose.yml
-│
+├── backend/
+│   ├── cmd/
+│   │   ├── server/
+│   │   │   └── main.go
+│   └── go.mod
+│   └── go.sum
+│   ├── internal/
+│   │   ├── api/
+│   │   │   ├── middleware/
+│   │   │   │   └── logging.go
+│   │   │   │   └── ratelimit.go
+│   │   │   │   └── websocket.go
+│   │   │   ├── websocket/
+│   │   │   │   └── handler.go
+│   │   ├── tools/
+│   │   │   └── dig.go
+│   │   │   └── ping.go
+│   │   ├── validation/
+│   │   │   └── input.go
+│   ├── pkg/
+│   │   ├── logger/
+│   │   │   └── logger.go
 ├── frontend/
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── tailwind.config.js
-│   ├── index.html
+│   └── eslint.config.js
+│   └── index.html
+│   ├── node_modules/
+│   └── package.json
+│   └── package-lock.json
+│   └── postcss.config.js
+│   ├── public/
+│   │   └── vite.svg
+│   └── README.md
 │   ├── src/
-│   │   ├── main.tsx
-│   │   ├── App.tsx
+│   │   └── App.tsx
+│   │   ├── assets/
+│   │   │   └── react.svg
 │   │   ├── components/
+│   │   │   ├── common/
+│   │   │   │   └── ToolInput.tsx
 │   │   │   ├── layout/
-│   │   │   │   ├── Sidebar.tsx
-│   │   │   │   ├── ThemeToggle.tsx
 │   │   │   │   └── OutputTerminal.tsx
+│   │   │   │   └── Sidebar.tsx
+│   │   │   │   └── ThemeToggle.tsx
 │   │   │   ├── tools/
-│   │   │   │   ├── PingTool.tsx
 │   │   │   │   └── DigTool.tsx
+│   │   │   │   └── PingTool.tsx
 │   │   │   ├── ui/
 │   │   │   │   └── alert.tsx
-│   │   │   └── common/
-│   │   │       ├── CommandPreview.tsx
-│   │   │       └── ToolInput.tsx
 │   │   ├── hooks/
-│   │   │   ├── useWebSocket.ts
-│   │   │   ├── useTheme.ts
 │   │   │   └── useLocalStorage.ts
+│   │   │   └── useTheme.ts
+│   │   │   └── useWebSocket.ts
+│   │   └── index.css
+│   │   ├── lib/
+│   │   │   └── utils.ts
+│   │   └── main.tsx
+│   │   ├── providers/
+│   │   │   └── ThemeProvider.tsx
 │   │   ├── services/
 │   │   │   └── websocket.ts
 │   │   ├── utils/
-│   │   │   ├── validation.ts
 │   │   │   └── formatters.ts
-│   │   └── types/
-│   │       └── index.ts
-│   │
-│   └── public/
-│
-└── backend/
-    ├── go.mod
-    ├── go.sum
-    ├── cmd/
-    │   └── server/
-    │       └── main.go
-    ├── internal/
-    │   ├── api/
-    │   │   ├── middleware/
-    │   │   │   ├── ratelimit.go
-    │   │   │   ├── websocket.go
-    │   │   │   └── logging.go
-    │   │   └── websocket/
-    │   │       └── handler.go
-    │   ├── tools/
-    │   │   ├── ping.go
-    │   │   └── dig.go
-    │   └── config/
-    │       └── config.go
-    └── pkg/
-        └── logger/
-            └── logger.go
+│   │   │   └── validation.ts
+│   │   └── vite-env.d.ts
+│   └── tailwind.config.js
+│   └── tsconfig.app.json
+│   └── tsconfig.json
+│   └── tsconfig.node.json
+│   └── vite.config.ts
+├──  masterplan.md
+└── directorystructure.md
